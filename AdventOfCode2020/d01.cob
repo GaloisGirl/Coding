@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. Advent-of-Code-2020-day-1.
+       PROGRAM-ID. Advent-of-Code-2020-day-1-part-1.
        AUTHOR. ANNA KOSIERADZKA.
       
        ENVIRONMENT DIVISION.
