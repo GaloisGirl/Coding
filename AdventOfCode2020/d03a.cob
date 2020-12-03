@@ -1,0 +1,46 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2020-03-1.
+       AUTHOR. ANNA KOSIERADZKA.
+      
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d3.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+           
+       DATA DIVISION.
+       FILE SECTION.
+         FD INPUTFILE.
+         01 INPUTRECORD PIC X(31).
+       WORKING-STORAGE SECTION.
+         01 FILE-STATUS PIC 9 VALUE 0.
+
+       LOCAL-STORAGE SECTION.
+         01 TREES UNSIGNED-INT VALUE 0.
+         01 Y UNSIGNED-INT VALUE 1.
+         01 MAP-WIDTH UNSIGNED-INT VALUE 31.
+
+       PROCEDURE DIVISION.
+       001-MAIN.
+            OPEN INPUT INPUTFILE.
+            PERFORM 002-READ UNTIL FILE-STATUS = 1.
+            CLOSE INPUTFILE.
+            DISPLAY TREES.
+            STOP RUN.
+
+       002-READ.
+            READ INPUTFILE
+                AT END MOVE 1 TO FILE-STATUS
+                NOT AT END PERFORM 003-PROCESS-LINE
+            END-READ.
+       
+       003-PROCESS-LINE.
+           IF INPUTRECORD(Y:1) = '#' THEN 
+              ADD 1 TO TREES
+           END-IF.
+           ADD 3 TO Y.
+           COMPUTE Y = FUNCTION MOD(Y, MAP-WIDTH).
+           IF Y = 0 THEN 
+               MOVE MAP-WIDTH TO Y
+           END-IF.
+
