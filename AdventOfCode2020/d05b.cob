@@ -66,7 +66,7 @@
        004-FIND-SEAT.
            PERFORM VARYING I FROM 2 BY 1 UNTIL I > 1022
               IF WS-SEATS(I - 1) = 1 AND WS-SEATS(I) = 0 AND 
-                    WS-SEATS(I - 2) = 1 THEN 
+                    WS-SEATS(I + 1) = 1 THEN 
                  COMPUTE FOUND-SEAT-ID = I - 1
                  EXIT PERFORM
                END-IF                 
