@@ -11,17 +11,13 @@
        DATA DIVISION.
        FILE SECTION.
          FD INPUTFILE.
-         01 INPUTRECORD.
-           05 INPUT-SEAT-ROW PIC X(7).
-           05 INPUT-SEAT-COL PIC X(3).
+         01 INPUTRECORD PIC X(10).
        WORKING-STORAGE SECTION.
          01 FILE-STATUS PIC 9 VALUE 0.
          01 WS-SEATS PIC 9 OCCURS 1024 TIMES.
 
        LOCAL-STORAGE SECTION.
          01 I UNSIGNED-INT VALUE 1.
-         01 SEAT-ROW UNSIGNED-INT VALUE 0.
-         01 SEAT-COL UNSIGNED-INT VALUE 0.
          01 SEAT-ID UNSIGNED-INT VALUE 0.
          01 FOUND-SEAT-ID UNSIGNED-INT VALUE 0.
 
@@ -41,25 +37,13 @@
             END-READ.
        
        003-PROCESS-RECORD.
-           MOVE 0 TO SEAT-ROW.
-           MOVE 0 TO SEAT-COL.
-
-           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 7
-              COMPUTE SEAT-ROW = SEAT-ROW * 2
-              IF INPUT-SEAT-ROW(I:1) = 'B' THEN 
-                 ADD 1 TO SEAT-ROW
+           MOVE 0 TO SEAT-ID. 
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 10
+              COMPUTE SEAT-ID = SEAT-ID * 2
+              IF INPUTRECORD(I:1) = 'B' OR INPUTRECORD(I:1) = 'R' THEN 
+                 ADD 1 TO SEAT-ID
               END-IF
            END-PERFORM.
-           
-           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 3
-              COMPUTE SEAT-COL = SEAT-COL * 2
-              IF INPUT-SEAT-COL(I:1) = 'R' THEN 
-                 ADD 1 TO SEAT-COL
-              END-IF
-           END-PERFORM.
-           
-           COMPUTE SEAT-ID = SEAT-ROW * 8 + SEAT-COL.
-
            COMPUTE I = SEAT-ID + 1
            MOVE 1 TO WS-SEATS(I).
 
