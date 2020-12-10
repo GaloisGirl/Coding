@@ -1,0 +1,65 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2020-10-1.
+       AUTHOR ANNA KOSIERADZKA.
+      
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d10.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+           
+       DATA DIVISION.
+       FILE SECTION.
+         FD INPUTFILE
+         RECORD IS VARYING IN SIZE FROM 1 to 99
+         DEPENDING ON REC-LEN.
+         01 INPUTRECORD PIC X(99).
+         
+       WORKING-STORAGE SECTION.
+         01 FILE-STATUS PIC 9 VALUE 0.
+         01 REC-LEN PIC 9(2) COMP.
+         01 WS-ARRAY-LEN PIC 9(2) VALUE 93.
+         01 WS-ARRAY OCCURS 11 TO 99 DEPENDING ON WS-ARRAY-LEN.
+           05 WS-ARRAY-I PIC 9(3).
+
+       LOCAL-STORAGE SECTION.
+         01 RESULT UNSIGNED-INT VALUE 0.
+         01 I UNSIGNED-INT VALUE 1.
+         01 DIFF-1 UNSIGNED-INT VALUE 1. 
+         01 DIFF-3 UNSIGNED-INT VALUE 1.
+         01 DIFF UNSIGNED-INT VALUE 0.
+
+       PROCEDURE DIVISION.
+       001-MAIN.
+           OPEN INPUT INPUTFILE.
+           PERFORM 002-READ UNTIL FILE-STATUS = 1.
+           CLOSE INPUTFILE.
+           SORT WS-ARRAY ON ASCENDING KEY WS-ARRAY-I.
+           PERFORM 004-USE-ADAPTERS.
+           DISPLAY DIFF-1.
+           DISPLAY DIFF-3.
+           COMPUTE RESULT = DIFF-1 * DIFF-3.
+           DISPLAY RESULT.
+           STOP RUN.
+
+       002-READ.
+            READ INPUTFILE
+                AT END MOVE 1 TO FILE-STATUS
+                NOT AT END PERFORM 003-PROCESS-RECORD
+            END-READ.
+       
+       003-PROCESS-RECORD.
+           ADD 1 TO RESULT.
+           MOVE INPUTRECORD TO WS-ARRAY-I(I).
+           ADD 1 TO I.
+
+       004-USE-ADAPTERS.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > WS-ARRAY-LEN - 1
+              COMPUTE DIFF = WS-ARRAY-I(I + 1) - WS-ARRAY-I(I)
+              IF DIFF = 1 THEN
+                 ADD 1 TO DIFF-1
+              END-IF
+              IF DIFF = 3 THEN
+                 ADD 1 TO DIFF-3
+              END-IF
+           END-PERFORM.
