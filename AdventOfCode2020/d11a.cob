@@ -18,17 +18,19 @@
            05 WS-ROW PIC X OCCURS 98 TIMES.
          01 WS-ARR-2 OCCURS 93 TIMES.
            05 WS-ROW-2 PIC X OCCURS 98 TIMES.
-
-         01 OCCUPIED PIC 9(10) VALUE 0.
-         01 CHANGES PIC 9(10) VALUE 0.
+         01 DI PIC S9 VALUE 0.
+         01 DJ PIC S9 VALUE 0.
 
        LOCAL-STORAGE SECTION.
          01 N-ROWS UNSIGNED-INT VALUE 93.
          01 N-COLS UNSIGNED-INT VALUE 98.
          01 I UNSIGNED-INT VALUE 1.
          01 J UNSIGNED-INT VALUE 1.
-         01 ROWS UNSIGNED-INT VALUE 0.
+         01 X UNSIGNED-INT VALUE 1.
+         01 Y UNSIGNED-INT VALUE 1.
          01 OCCUPIED-ADJACENT UNSIGNED-INT VALUE 0.
+         01 OCCUPIED UNSIGNED-INT VALUE 0.
+         01 CHANGES UNSIGNED-INT VALUE 0.
         
        PROCEDURE DIVISION.
        001-MAIN.
@@ -82,47 +84,18 @@
 
        006-COUNT-OCCUPIED-ADJACENT.
            MOVE 0 TO OCCUPIED-ADJACENT.
-           IF I > 1 THEN 
-              IF J > 1 THEN
-                 IF WS-ROW-2(I - 1, J - 1) = '#' THEN 
-                    ADD 1 TO OCCUPIED-ADJACENT
-                 END-IF
-              END-IF
-              IF WS-ROW-2(I - 1, J) = '#' THEN 
+           PERFORM VARYING DI FROM -1 BY 1 UNTIL DI > 1
+           AFTER DJ FROM -1 BY 1 UNTIL DJ > 1
+             COMPUTE X = I + DI
+             COMPUTE Y = J + DJ
+             IF X > 0 AND Y > 0 AND 
+               X <= N-ROWS  AND Y <= N-COLS
+               AND WS-ROW-2(X, Y) = '#' THEN
                  ADD 1 TO OCCUPIED-ADJACENT
-              END-IF
-              IF J < N-COLS THEN
-                 IF WS-ROW-2(I - 1, J + 1) = '#' THEN 
-                    ADD 1 TO OCCUPIED-ADJACENT
-                 END-IF
-              END-IF
-           END-IF
-
-           IF J > 1 THEN
-              IF WS-ROW-2(I, J - 1) = '#' THEN 
-                 ADD 1 TO OCCUPIED-ADJACENT
-              END-IF
-           END-IF
-           IF J < N-COLS THEN
-              IF WS-ROW-2(I, J + 1) = '#' THEN 
-                 ADD 1 TO OCCUPIED-ADJACENT
-              END-IF
-           END-IF
-
-           IF I < N-ROWS THEN 
-              IF J > 1 THEN
-                 IF WS-ROW-2(I + 1, J - 1) = '#' THEN 
-                    ADD 1 TO OCCUPIED-ADJACENT
-                 END-IF
-              END-IF
-              IF WS-ROW-2(I + 1, J) = '#' THEN 
-                 ADD 1 TO OCCUPIED-ADJACENT
-              END-IF
-              IF J < N-COLS THEN
-                 IF WS-ROW-2(I + 1, J + 1) = '#' THEN 
-                    ADD 1 TO OCCUPIED-ADJACENT
-                 END-IF
-              END-IF
+             END-IF
+           END-PERFORM.
+           IF WS-ROW-2(I, J) = '#' THEN
+             SUBTRACT 1 FROM OCCUPIED-ADJACENT
            END-IF.
 
        007-COUNT-OCCUPIED.
