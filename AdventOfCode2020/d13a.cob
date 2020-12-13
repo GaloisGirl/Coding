@@ -1,0 +1,74 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2020-13-1.
+       AUTHOR ANNA KOSIERADZKA.
+      
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d13.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+           
+       DATA DIVISION.
+       FILE SECTION.
+         FD INPUTFILE
+         RECORD IS VARYING IN SIZE FROM 1 to 200
+         DEPENDING ON REC-LEN.
+         01 INPUTRECORD PIC X(200).
+         
+       WORKING-STORAGE SECTION.
+         01 REC-LEN PIC 9(2) COMP.
+         01 WS-START PIC 9(8).
+         01 WS-BUSES PIC 9(5) OCCURS 1 TO 99 DEPENDING ON N.
+         01 WS-BUFFER PIC 9(5).
+         77 N PIC 99 VALUE 99.
+         77 WS-QUOTIENT PIC 9(5).
+         77 WS-MOD PIC 9(5).
+         77 WS-TIME PIC 9(5).
+         77 WS-BUS-MIN PIC 9(5).
+         77 WS-TIME-MIN PIC 9(5) VALUE 99999.
+
+       LOCAL-STORAGE SECTION.
+         01 RESULT UNSIGNED-INT VALUE 0.
+         01 STRING-PTR UNSIGNED-INT VALUE 1.
+         01 I UNSIGNED-INT VALUE 0.
+         01 J UNSIGNED-INT VALUE 1.
+
+       PROCEDURE DIVISION.
+       001-MAIN.
+           OPEN INPUT INPUTFILE.
+           PERFORM 002-READ.
+           CLOSE INPUTFILE.
+           PERFORM 003-FIND-EARLIEST-BUS.
+           DISPLAY RESULT.
+           STOP RUN.
+
+       002-READ.
+           READ INPUTFILE 
+           END-READ.
+           MOVE INPUTRECORD TO WS-START.
+           READ INPUTFILE 
+           END-READ.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 99
+             MOVE 0 TO WS-BUFFER
+             UNSTRING INPUTRECORD DELIMITED BY ',' INTO WS-BUFFER
+             WITH POINTER STRING-PTR
+             COMPUTE WS-BUFFER = FUNCTION NUMVAL(WS-BUFFER)
+             IF NOT WS-BUFFER = 0 THEN 
+               MOVE WS-BUFFER TO WS-BUSES(J)
+               ADD 1 TO J
+             END-IF
+           END-PERFORM.
+           COMPUTE N = J - 1.
+        
+
+       003-FIND-EARLIEST-BUS.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > N
+              DIVIDE WS-START BY WS-BUSES(I) 
+                 GIVING WS-QUOTIENT REMAINDER WS-MOD
+              COMPUTE WS-TIME = WS-BUSES(I) - WS-MOD
+              IF WS-TIME < WS-TIME-MIN THEN 
+                 MOVE WS-TIME TO WS-TIME-MIN
+                 MOVE WS-BUSES(I) TO WS-BUS-MIN
+              END-IF 
+           END-PERFORM.
+           COMPUTE RESULT = WS-TIME-MIN * WS-BUS-MIN.
