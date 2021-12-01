@@ -1,0 +1,43 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2021-01-1.
+       AUTHOR. ANNA KOSIERADZKA.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d01.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+
+       FILE SECTION.
+         FD INPUTFILE.
+         01 INPUTRECORD PIC X(4).
+
+       WORKING-STORAGE SECTION.
+         01 FILE-STATUS PIC 9 VALUE 0.
+         01 WS-MEASURE PIC 9(4).
+         01 WS-PREV-MEASURE PIC 9(4) VALUE 9999.
+         01 WS-NUM PIC 9(4) VALUE 0.
+
+       PROCEDURE DIVISION.
+       001-MAIN.
+            OPEN INPUT INPUTFILE.
+            PERFORM 002-READ UNTIL FILE-STATUS = 1.
+            CLOSE INPUTFILE.
+            DISPLAY WS-NUM.
+            STOP RUN.
+
+       002-READ.
+            READ INPUTFILE
+                AT END MOVE 1 TO FILE-STATUS
+                NOT AT END PERFORM 003-PROCESS-RECORD
+            END-READ.
+
+       003-PROCESS-RECORD.
+           COMPUTE WS-MEASURE = FUNCTION NUMVAL(INPUTRECORD)
+           IF WS-MEASURE > WS-PREV-MEASURE THEN
+               ADD 1 TO WS-NUM
+           END-IF
+           COMPUTE WS-PREV-MEASURE = WS-MEASURE.
+                                                                        
