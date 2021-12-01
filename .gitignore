@@ -1,3 +1,6 @@
 *.exe
 AdventOfCode2020/input
 AdventOfCode2020/*.input
+AdventOfCode2021/input
+AdventOfCode2021/*.input
+.vscode
