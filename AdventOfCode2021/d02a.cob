@@ -1,0 +1,50 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2021-02-1.
+       AUTHOR. ANNA KOSIERADZKA.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d02.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+
+           
+       DATA DIVISION.
+
+       FILE SECTION.
+         FD INPUTFILE.
+         01 INPUTRECORD PIC X(10).
+
+       WORKING-STORAGE SECTION.
+         01 FILE-STATUS PIC 9 VALUE 0.
+         01 WS-X PIC 9(4) VALUE 0.
+         01 WS-Y PIC 9(4) VALUE 0.
+         01 WS-RESULT PIC 9(8).
+         01 WS-DIR PIC X(8).
+         01 WS-VAL PIC 9.
+
+       PROCEDURE DIVISION.
+       001-MAIN.
+            OPEN INPUT INPUTFILE.
+            PERFORM 002-READ UNTIL FILE-STATUS = 1.
+            CLOSE INPUTFILE.
+            COMPUTE WS-RESULT = WS-X * WS-Y.
+            DISPLAY WS-RESULT.
+            STOP RUN.
+
+       002-READ.
+            READ INPUTFILE
+                AT END MOVE 1 TO FILE-STATUS
+                NOT AT END PERFORM 003-PROCESS-RECORD
+            END-READ.
+
+       003-PROCESS-RECORD.
+           UNSTRING INPUTRECORD DELIMITED BY SPACE INTO WS-DIR WS-VAL
+           IF WS-DIR(1:1) = "f" THEN
+             ADD WS-VAL TO WS-X
+           ELSE IF WS-DIR(1:1) = "d" THEN
+             ADD WS-VAL TO WS-Y
+           ELSE
+             SUBTRACT WS-VAL FROM WS-Y
+           END-IF.
+
