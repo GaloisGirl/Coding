@@ -1,0 +1,62 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2021-03-1.
+       AUTHOR. ANNA KOSIERADZKA.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d03.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+
+       FILE SECTION.
+         FD INPUTFILE.
+         01 INPUTRECORD PIC X(12).         
+
+       WORKING-STORAGE SECTION.
+         01 FILE-STATUS PIC 9 VALUE 0.
+         01 N PIC 9(2) VALUE 12.
+         01 M PIC 9(4) VALUE 1000.
+         01 WS-GAMMA-DEC PIC 9(8) VALUE 0.
+         01 WS-EPSILON-DEC PIC 9(8) VALUE 0.
+         01 WS-COUNTS-1 PIC 9(3) VALUE 0 
+           OCCURS 0 TO 12 TIMES DEPENDING ON N.
+         01 WS-RESULT PIC 9(16).
+
+       LOCAL-STORAGE SECTION.
+         01 I UNSIGNED-INT VALUE 1.  
+
+       PROCEDURE DIVISION.
+       001-MAIN.
+           OPEN INPUT INPUTFILE.
+           PERFORM 002-READ UNTIL FILE-STATUS = 1.
+           CLOSE INPUTFILE.
+           PERFORM 004-COMPUTE-GAMMA-DEC.
+           COMPUTE WS-RESULT = WS-GAMMA-DEC * WS-EPSILON-DEC.
+           DISPLAY WS-RESULT.
+           STOP RUN.
+
+       002-READ.
+            READ INPUTFILE
+                AT END MOVE 1 TO FILE-STATUS
+                NOT AT END PERFORM 003-PROCESS-RECORD
+            END-READ.
+
+       003-PROCESS-RECORD.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > N
+               IF INPUTRECORD(I:1) = '1' THEN
+                   ADD 1 TO WS-COUNTS-1(I)
+               END-IF
+           END-PERFORM.
+
+       004-COMPUTE-GAMMA-DEC.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > N
+               COMPUTE WS-GAMMA-DEC = WS-GAMMA-DEC * 2
+               COMPUTE WS-EPSILON-DEC = WS-EPSILON-DEC * 2
+               IF WS-COUNTS-1(I) > M / 2 THEN 
+                   COMPUTE WS-GAMMA-DEC = WS-GAMMA-DEC + 1
+               ELSE 
+                   COMPUTE WS-EPSILON-DEC = WS-EPSILON-DEC + 1
+               END-IF
+           END-PERFORM.
