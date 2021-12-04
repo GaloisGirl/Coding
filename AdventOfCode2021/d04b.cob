@@ -21,9 +21,6 @@
          01 REC-LEN PIC 9(2) COMP.
          01 WS-DRAWN PIC 99 VALUE 0 OCCURS 99 TIMES.         
          01 WS-TMP PIC XX.
-      * number of numbers drawn
-      * N is shit
-         01 N PIC 99 VALUE 0.
       * number of boards   
          01 M PIC 9(3) VALUE 0.
          01 WS-BOARDS OCCURS 100 TIMES.
@@ -78,9 +75,7 @@
              UNSTRING INPUTRECORD DELIMITED BY ',' INTO WS-TMP
              WITH POINTER STRING-PTR
              COMPUTE WS-DRAWN(I) = FUNCTION NUMVAL(WS-TMP)
-             ADD 1 TO N
            END-PERFORM.
-           SUBTRACT 1 FROM N.
 
        005-READ-BOARDS.
            MOVE 1 TO STRING-PTR.
