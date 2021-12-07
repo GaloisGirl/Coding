@@ -1,0 +1,54 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2021-07-1.
+       AUTHOR. ANNA KOSIERADZKA.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d07.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+
+       FILE SECTION.
+         FD INPUTFILE.
+         01 INPUTRECORD PIC X(4).
+      * input was modified to have 1 number per line   
+         
+       WORKING-STORAGE SECTION.
+         01 FILE-STATUS PIC 9 VALUE 0.
+         01 N PIC 9(4) VALUE 1000.
+         01 WS-ARRAY OCCURS 0 TO 1000 TIMES DEPENDING ON N.
+           05 WS-NUM PIC 9(4) VALUE 0.
+         01 WS-MEDIAN PIC 9(4) VALUE 0.
+         01 WS-RESULT PIC 9(8) VALUE 0.
+
+       LOCAL-STORAGE SECTION.
+         01 I UNSIGNED-INT VALUE 1.
+
+       PROCEDURE DIVISION.
+       001-MAIN.
+            OPEN INPUT INPUTFILE.
+            PERFORM 002-READ UNTIL FILE-STATUS = 1.
+            CLOSE INPUTFILE.
+            PERFORM 004-COMPUTE.
+            DISPLAY WS-RESULT.
+            STOP RUN.
+            
+       002-READ.
+            READ INPUTFILE
+                AT END MOVE 1 TO FILE-STATUS
+                NOT AT END PERFORM 003-PROCESS-RECORD
+            END-READ.
+
+       003-PROCESS-RECORD.
+           COMPUTE WS-NUM(I) = FUNCTION NUMVAL(INPUTRECORD).
+           ADD 1 TO I.
+
+       004-COMPUTE.
+           SORT WS-ARRAY ASCENDING WS-NUM.
+           COMPUTE WS-MEDIAN = WS-NUM(N / 2).
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > N
+             COMPUTE WS-RESULT = WS-RESULT + 
+               FUNCTION ABS(WS-MEDIAN - WS-NUM(I)) 
+           END-PERFORM.
