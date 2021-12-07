@@ -1,0 +1,56 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2021-06-2.
+       AUTHOR. ANNA KOSIERADZKA.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d06.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+
+       FILE SECTION.
+         FD INPUTFILE.
+         01 INPUTRECORD PIC 9.
+      * input was modified to have 1 number per line   
+         
+       WORKING-STORAGE SECTION.
+         01 FILE-STATUS PIC 9 VALUE 0.
+         01 N PIC 9(16) VALUE 0.
+         01 I PIC 9(16) VALUE 1.
+         01 WS-FISH PIC 9(16) VALUE 0 OCCURS 10 TIMES.
+         01 WS-RESULT PIC 9(16) VALUE 0.
+       LOCAL-STORAGE SECTION.
+
+       PROCEDURE DIVISION.
+       001-MAIN.
+            OPEN INPUT INPUTFILE.
+            PERFORM 002-READ UNTIL FILE-STATUS = 1.
+            CLOSE INPUTFILE.
+            PERFORM 004-NEXT-DAY 256 TIMES.
+            PERFORM 005-COUNT-FISH.
+            DISPLAY WS-RESULT.
+            STOP RUN.
+            
+       002-READ.
+            READ INPUTFILE
+                AT END MOVE 1 TO FILE-STATUS
+                NOT AT END PERFORM 003-PROCESS-RECORD
+            END-READ.
+
+       003-PROCESS-RECORD.
+           ADD 1 TO WS-FISH(INPUTRECORD + 1).
+
+       004-NEXT-DAY.
+           MOVE WS-FISH(1) TO N 
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 8 
+             MOVE WS-FISH(I + 1) TO WS-FISH(I)
+           END-PERFORM.
+           MOVE N TO WS-FISH(9).
+           ADD N TO WS-FISH(7).
+
+       005-COUNT-FISH.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 10
+             COMPUTE WS-RESULT = WS-RESULT + WS-FISH(I) 
+           END-PERFORM.
