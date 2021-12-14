@@ -1,0 +1,51 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2021-08-1.
+       AUTHOR. ANNA KOSIERADZKA.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d08.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+         FD INPUTFILE.
+         01 INPUTRECORD PIC X(99).
+         
+       WORKING-STORAGE SECTION.
+         01 FILE-STATUS PIC 9 VALUE 0.
+         01 WS-RESULT PIC 9(4) VALUE 0.
+         01 WS-BUFFER PIC X(8) OCCURS 4 TIMES. 
+         77 I PIC 9(2).
+         77 N PIC 9(2).
+         77 M PIC 9(2).
+         77 STRING-PTR PIC 9(2).
+         
+       PROCEDURE DIVISION.
+       001-MAIN.
+           OPEN INPUT INPUTFILE.
+           PERFORM 002-READ UNTIL FILE-STATUS = 1.
+           CLOSE INPUTFILE.
+           DISPLAY WS-RESULT.
+           STOP RUN. 
+           
+       002-READ.
+           READ INPUTFILE
+             AT END MOVE 1 TO FILE-STATUS
+             NOT AT END PERFORM 003-PROCESS-RECORD
+           END-READ.
+
+       003-PROCESS-RECORD.
+           MOVE 1 TO STRING-PTR.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > 4
+             UNSTRING INPUTRECORD(62:28) DELIMITED BY SPACE
+               INTO WS-BUFFER(I)
+               WITH POINTER STRING-PTR
+             MOVE 0 TO M
+             INSPECT WS-BUFFER(I) TALLYING M FOR TRAILING SPACES
+             COMPUTE N = 8 - M
+             IF N < 5 OR N = 7 THEN
+               ADD 1 TO WS-RESULT
+             END-IF  
+           END-PERFORM.
