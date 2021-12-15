@@ -1,0 +1,60 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. AOC-2021-15-1.
+       AUTHOR. ANNA KOSIERADZKA.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUTFILE ASSIGN TO "d15.input"
+           ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+
+       FILE SECTION.
+         FD INPUTFILE.         
+         01 INPUTRECORD PIC X(100).
+
+       WORKING-STORAGE SECTION.
+         01 FILE-STATUS PIC 9 VALUE 0.
+         01 N CONSTANT AS 100.
+         01 WS-MAP-ARR OCCURS 100 TIMES.
+           05 WS-MAP PIC 9 OCCURS 100 TIMES.
+         01 WS-COST-ARR OCCURS 100 TIMES.
+           05 WS-COST PIC 9(4) VALUE 0 OCCURS 100 TIMES.
+         77 I PIC 9(3) VALUE 1.
+         77 J PIC 9(3) VALUE 1.
+         77 RESULT PIC 9(4).
+
+       PROCEDURE DIVISION.
+       001-MAIN.
+           OPEN INPUT INPUTFILE.
+           PERFORM 002-READ UNTIL FILE-STATUS = 1.
+           CLOSE INPUTFILE.
+           PERFORM 004-COMPUTE-COSTS.
+           COMPUTE RESULT = WS-COST(N, N) - WS-MAP(1, 1).
+           DISPLAY RESULT.
+           STOP RUN.
+
+       002-READ.
+           READ INPUTFILE
+             AT END MOVE 1 TO FILE-STATUS
+             NOT AT END PERFORM 003-PROCESS-RECORD
+           END-READ.
+
+       003-PROCESS-RECORD.
+           MOVE INPUTRECORD TO WS-MAP-ARR(I).
+           ADD 1 TO I.
+
+       004-COMPUTE-COSTS.
+           MOVE WS-MAP(1, 1) TO WS-COST(1, 1).
+           PERFORM VARYING I FROM 2 BY 1 UNTIL I > N
+             COMPUTE WS-COST(1, I) = WS-COST(1, I - 1) + WS-MAP(1, I)
+             COMPUTE WS-COST(I, 1) = WS-COST(I - 1, 1) + WS-MAP(I, 1)
+           END-PERFORM.
+
+           PERFORM VARYING I FROM 2 BY 1 UNTIL I > N
+             PERFORM VARYING J FROM 2 BY 1 UNTIL J > N
+               COMPUTE WS-COST(I, J) = WS-MAP(I, J) +
+                 FUNCTION MIN(WS-COST(I - 1, J) WS-COST(I, J - 1))
+             END-PERFORM
+           END-PERFORM.
